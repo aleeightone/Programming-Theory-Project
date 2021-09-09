@@ -2,17 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Character
 {
-    public float moveSpeed = 1.0f;
+    
     public float maxJumpForce = 1.0f;
     private float jumpForce;
     public float jumpDropOff = 0.9f;
-    //public int jumpPower = 100;
-    //public int jumpPowerLeft;
     const float groundedRadius = 0.2f;
 
-    public bool isFacingRight;
+    
     public bool isIdle;
     public bool isOnGround;
     public bool isJumping;
@@ -22,6 +20,9 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D playerRb;
     private GameObject player;
     public SpriteRenderer playerSprite;
+    public Transform attackLocation;
+    public float attackOffset;
+
 
     public Animator anim;
     public bool isWalking;
@@ -33,9 +34,15 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        moveSpeed = 10.0f;
+        health = 5;
+        stamina = 5;
+        attackLocation.transform.localPosition = new Vector2(attackOffset, 0);
+
         playerRb = GetComponent<Rigidbody2D>();
         groundCheck = GameObject.Find("Ground Check");
         isFacingRight = true;
+        
         //jumpPowerLeft = jumpPower;
         jumpForce = maxJumpForce;
         player = gameObject;
@@ -70,12 +77,7 @@ public class PlayerController : MonoBehaviour
         //jump code. Maybe abstract all this later.
         if (jumpPressed && canJump)
         {
-            playerRb.AddForce((Vector2.up * jumpForce), ForceMode2D.Impulse);
-            //jumpPowerLeft--;
-            jumpForce = jumpForce * jumpDropOff;
-
-            isJumping = true;
-            anim.SetBool("isJumping", isJumping);
+            PlayerJump();
         }
 
         if (isJumping && !jumpPressed)
@@ -112,10 +114,49 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            DataController.Instance.playerHealth--; //need to go back and sync this later for moving between scenes
+            health--;
+        }
+
+        if (collision.gameObject.CompareTag("Pickup"))
+        {
+            Destroy(collision.gameObject);
+            health++;
+            DataController.Instance.playerHealth++;
+        }
+
+        if (health == 0)
+        {
+            Die();
+        }
+    }
+
 
     void ChangeFacing()
     {
         isFacingRight = !isFacingRight;
         playerSprite.flipX = isFacingRight;
+        attackOffset = -attackOffset;
+        attackLocation.transform.localPosition = new Vector2(attackOffset, 0);
+
+    }
+
+    void PlayerJump()
+    {
+        playerRb.AddForce((Vector2.up * jumpForce), ForceMode2D.Impulse);
+        jumpForce = jumpForce * jumpDropOff;
+
+        isJumping = true;
+        anim.SetBool("isJumping", isJumping);
+    }
+
+    public override void Die()
+    {
+        base.Die();
+        Debug.Log("The player has died.");
     }
 }
