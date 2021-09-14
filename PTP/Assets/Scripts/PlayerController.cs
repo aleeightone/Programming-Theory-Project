@@ -11,10 +11,7 @@ public class PlayerController : Character
     const float groundedRadius = 0.2f;
 
     
-    public bool isIdle;
-    public bool isOnGround;
-    public bool isJumping;
-    public bool canJump;
+
     public GameObject groundCheck;
     public LayerMask whatIsGround;
     public Rigidbody2D playerRb;
@@ -34,18 +31,20 @@ public class PlayerController : Character
     // Start is called before the first frame update
     void Awake()
     {
-        moveSpeed = 10.0f;
-        health = 5;
-        stamina = 5;
+        SetMoveSpeed(10.0f);
+        SetHealth(5);
+        SetStamina(5);
         attackLocation.transform.localPosition = new Vector2(attackOffset, 0);
 
-        playerRb = GetComponent<Rigidbody2D>();
-        groundCheck = GameObject.Find("Ground Check");
-        isFacingRight = true;
-        
-        //jumpPowerLeft = jumpPower;
-        jumpForce = maxJumpForce;
         player = gameObject;
+        playerRb = GetComponent<Rigidbody2D>();
+        groundCheck = player.transform.Find("Ground Check").gameObject;
+        whatIsGround = LayerMask.GetMask("Ground");
+        SetFacingRight(true);
+        jumpForce = maxJumpForce;
+        
+        GameObject spriteObj = player.transform.Find("PlayerSprite").gameObject; //lol this is bad, fix this later...or is it?
+        playerSprite = spriteObj.GetComponent<SpriteRenderer>();
         playerSprite.flipX = isFacingRight;
 
     }
@@ -63,11 +62,14 @@ public class PlayerController : Character
         if (moveDirection == 0) 
         { 
             isWalking = false;
+            isIdle = true;
             anim.SetBool("isWalking", isWalking);
+            
         }
         else 
         { 
-            isWalking = true;
+            isWalking = true; 
+            isIdle = false;
             anim.SetBool("isWalking", isWalking);
             if (moveDirection > 0 && !isFacingRight) { ChangeFacing(); }
             else if (moveDirection < 0 && isFacingRight) { ChangeFacing(); }
@@ -86,30 +88,8 @@ public class PlayerController : Character
         }
 
 
-        //this is inserted code to detect collision with the ground. Still working on it.
-        bool wasGrounded = isOnGround;
-        isOnGround = false;
-
-        // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
-        // This can be done using layers instead but Sample Assets will not overwrite your project settings.
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.transform.position, groundedRadius, whatIsGround);
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            if (colliders[i].gameObject != gameObject)
-            {
-                isOnGround = true;
-                canJump = true;
-                isJumping = false;
-                anim.SetBool("isJumping", isJumping);
-                //jumpPowerLeft = jumpPower;
-                jumpForce = maxJumpForce;
-            }
-
-            if (!wasGrounded)
-            {
-
-            }
-        }
+        CheckGrounded();
+        
 
 
     }
@@ -135,6 +115,32 @@ public class PlayerController : Character
         }
     }
 
+    void CheckGrounded()
+    {
+        bool wasGrounded = isOnGround;
+        isOnGround = false;
+
+
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.transform.position, groundedRadius, whatIsGround);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            
+            if (colliders[i].gameObject != gameObject)
+            {
+                
+                isOnGround = true;
+                canJump = true;
+                isJumping = false;
+                anim.SetBool("isJumping", isJumping);
+                jumpForce = maxJumpForce;
+            }
+
+            if (!wasGrounded)
+            {
+                Debug.Log("This should not happen yet!");
+            }
+        }
+    }
 
     void ChangeFacing()
     {

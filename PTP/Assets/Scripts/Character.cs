@@ -7,9 +7,36 @@ public class Character : MonoBehaviour
     [Range(0, 100)] public int health;
     [Range(0, 100)] public int stamina;
     public float moveSpeed;
-    public int score;
+
+    public bool isIdle;
+    public bool isOnGround;
+    public bool isJumping;
+    public bool canJump;
     public bool isFacingRight;
 
+    public void SetHealth(int hp)
+    {
+        health = hp;
+    }
+
+    public void SetStamina(int sta)
+    {
+        stamina = sta;
+    }
+
+    public void SetMoveSpeed(float move)
+    {
+        moveSpeed = move;
+    }
+
+    public void SetFacingRight(bool right)
+    {
+        isFacingRight = right;
+    }
+
+    
+    
+    
     // Start is called before the first frame update
     void Start()
     {
