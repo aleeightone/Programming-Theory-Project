@@ -5,7 +5,7 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     [Range(0, 100)] public int health;
-    [Range(0, 100)] public int stamina;
+    [Range(0, 100)] private int stamina;
     public float moveSpeed;
 
     public bool isIdle;
@@ -14,16 +14,21 @@ public class Character : MonoBehaviour
     public bool canJump;
     public bool isFacingRight;
 
+    //INHERITANCE
+    
     public void SetHealth(int hp)
     {
         health = hp;
     }
 
-    public void SetStamina(int sta)
+    public int GetHealth()
     {
-        stamina = sta;
+        return health;
     }
 
+    //ENCAPSULATION
+    public int Stamina { get; set; }
+    
     public void SetMoveSpeed(float move)
     {
         moveSpeed = move;
@@ -43,7 +48,7 @@ public class Character : MonoBehaviour
         
     }
 
-    // Update is called once per frame
+    
     void FixedUpdate()
     {
         if (health == 0)
@@ -51,7 +56,7 @@ public class Character : MonoBehaviour
             Die();
         }
     }
-
+    //POLYMORPHISM
     public virtual void Die()
     {
         Debug.Log("I died!");

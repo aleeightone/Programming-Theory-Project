@@ -31,9 +31,9 @@ public class PlayerController : Character
     // Start is called before the first frame update
     void Awake()
     {
-        SetMoveSpeed(10.0f);
-        SetHealth(5);
-        SetStamina(5);
+        SetMoveSpeed(10.0f); //INHERITANCE
+        SetHealth(5); //INHERITANCE
+        Stamina = 5; //ENCAPSULATION
         attackLocation.transform.localPosition = new Vector2(attackOffset, 0);
 
         player = gameObject;

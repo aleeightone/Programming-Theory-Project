@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//INHERITANCE
 public class Enemy : Character
 {
     //these are either in-use variables or are fixed needs in planning.
@@ -37,7 +38,7 @@ public class Enemy : Character
     void Awake()
     {
         SetHealth(1);
-        SetStamina(1);
+        Stamina = 1;
         SetMoveSpeed(1.0f);
         SetScore(1);
         SetFacingRight(true);
@@ -59,8 +60,9 @@ public class Enemy : Character
     // Update is called once per frame
     void FixedUpdate()
     {
+        //ABSTRACTION
         Patrol();
-
+        
         CheckGrounded();
 
         if (willFall)
@@ -98,7 +100,7 @@ public class Enemy : Character
         
     }
 
-
+    //POLYMORPHISM
     public override void Die()
     {
         Debug.Log("This enemy died!");
