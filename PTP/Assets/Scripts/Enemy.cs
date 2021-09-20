@@ -25,8 +25,11 @@ public class Enemy : Character
     private float direction = 1.0f;
     const float groundedRadius = 0.2f;
 
-    //these have not been used yet, delete if needed
     public bool isAlert;
+    public Animator anim;
+
+    //these have not been used yet, delete if needed
+
 
 
     public void SetScore(int points)
@@ -72,32 +75,27 @@ public class Enemy : Character
 
         CheckDropoff();
 
-        //raycast to detect stuff in front of the agent
-        if (isFacingRight) { rayDirection = Vector2.right; }
-        else if (!isFacingRight) { rayDirection = Vector2.left; }
+        CheckObstacleInFront();
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, rayDirection, 0.75f);
-        if(hit.collider != null)
-        {
-            Debug.Log(gameObject.name+": I see a "+hit.collider.name+"! in layer "+hit.collider.gameObject.layer);
-            if(hit.collider.gameObject.layer == 6)
-            {
-                ChangeFacing();
-            }
-
-        }
-
+        CheckPlayerInSight();
 
     }
 
     void Patrol()
     {
-        if (isOnGround)
+        if (isOnGround && !isAlert)
         {
             Vector2 targetVelocity = new Vector2(direction * moveSpeed, enemyRb.velocity.y);
             enemyRb.velocity = Vector2.SmoothDamp(enemyRb.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
+            anim.SetBool("isAlert", isAlert);
         }
-        
+        else if (isOnGround && isAlert)
+        {
+            Vector2 targetVelocity = new Vector2(direction * moveSpeed * 5, enemyRb.velocity.y);
+            enemyRb.velocity = Vector2.SmoothDamp(enemyRb.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
+            anim.SetBool("isAlert", isAlert);
+        }
+
     }
 
     //POLYMORPHISM
@@ -151,6 +149,46 @@ public class Enemy : Character
                 willFall = false;
             }
 
+        }
+    }
+
+    public void CheckObstacleInFront()
+    {
+        //raycast to detect obstacles in front of the agent
+        if (isFacingRight) { rayDirection = Vector2.right; }
+        else if (!isFacingRight) { rayDirection = Vector2.left; }
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, rayDirection, 0.75f);
+        if (hit.collider != null)
+        {
+            //Debug.Log(gameObject.name + ": I see a " + hit.collider.name + "! in layer " + hit.collider.gameObject.layer);
+            if (hit.collider.gameObject.layer == 6)
+            {
+                ChangeFacing();
+            }
+
+        }
+    }
+
+    public void CheckPlayerInSight()
+    {
+        //raycast to detect player in front of the agent
+        if (isFacingRight) { rayDirection = Vector2.right; }
+        else if (!isFacingRight) { rayDirection = Vector2.left; }
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, rayDirection, 5f);
+        if (hit.collider != null)
+        {
+            //Debug.Log(gameObject.name + ": I see a " + hit.collider.name + "! with tag " + hit.collider.gameObject.tag);
+            if (hit.collider.gameObject.tag == "Player")
+            {
+                isAlert = true;
+            }
+            else { isAlert = false; }
+        }
+        else if (hit.collider == null)
+        {
+            isAlert = false;
         }
     }
 

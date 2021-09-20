@@ -10,6 +10,8 @@ public class StartMenuUIManager : MonoBehaviour
 
     public void StartGame()
     {
+        DataController.Instance.SetPlayerHealth(3);
+        DataController.Instance.SetScore(0);
         SceneManager.LoadScene(1);
     }
 

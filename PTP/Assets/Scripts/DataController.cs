@@ -33,6 +33,27 @@ public class DataController : MonoBehaviour
         public int playerHighScore;
     }
 
+    public int GetPlayerHealth()
+    {
+        return playerHealth;
+    }
+
+    public void SetPlayerHealth(int hp)
+    {
+        playerHealth = hp;
+    }
+
+    public int GetScore()
+    {
+        return playerScore;
+    }
+
+    public void SetScore(int pt)
+    {
+        playerScore = pt;
+    }
+
+
     public void SaveHighScore()
     {
         SaveData data = new SaveData();

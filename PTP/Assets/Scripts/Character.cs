@@ -13,6 +13,7 @@ public class Character : MonoBehaviour
     public bool isJumping;
     public bool canJump;
     public bool isFacingRight;
+    public bool isDead;
 
     //INHERITANCE
     
@@ -59,6 +60,7 @@ public class Character : MonoBehaviour
     //POLYMORPHISM
     public virtual void Die()
     {
+        isDead = true;
         Debug.Log("I died!");
     }
 }
